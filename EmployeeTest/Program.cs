@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EmployeeTest.Services;
+using Newtonsoft.Json;
 using System;
 
 namespace EmployeeTest
@@ -10,7 +11,8 @@ namespace EmployeeTest
             try
             {
                 Console.WriteLine("Hello World!");
-                var employeeService = new EmployeeService();
+                var parseService = new ParseService();
+                var employeeService = new EmployeeService(parseService);
 
                 var employeeData = employeeService.GetAllEmployeeData();
 
