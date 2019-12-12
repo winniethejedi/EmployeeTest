@@ -12,9 +12,14 @@ namespace EmployeeTest
             {
                 Console.WriteLine("Hello World!");
                 var parseService = new ParseService();
-                var employeeService = new EmployeeService(parseService);
+                var documentService = new DocumentService();
+                var employeeService = new EmployeeService(parseService, documentService);
 
                 var employeeData = employeeService.GetAllEmployeeData();
+
+                var paycheckService = new PaycheckService(employeeService);
+
+                var paycheckData = paycheckService.GetPaychecks();
 
                 Console.WriteLine("All done! Good-bye world!");
             }

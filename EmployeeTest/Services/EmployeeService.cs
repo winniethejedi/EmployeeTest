@@ -8,22 +8,25 @@ namespace EmployeeTest.Services
     public class EmployeeService
     {
         private ParseService ParseService { get; set; }
+        private DocumentService DocumentService { get; set; }
 
-        public EmployeeService(ParseService ParseService)
+        public EmployeeService(ParseService ParseService, DocumentService DocumentService)
         {
             this.ParseService = ParseService;
+            this.DocumentService = DocumentService;
         }
 
         public List<EmployeeModel> GetAllEmployeeData()
         {
             var employeeData = new List<EmployeeModel>();
 
-            string[] lines = File.ReadAllLines(@"E:\Users\Owner\Downloads\AaronTemp\Employees\Employees.txt");
+            string[] lines = DocumentService.GetDocumentLines();
 
             foreach(string line in lines)
             {
                 var employeeRawData = GetRawEmployeeModel(line);
                 var employeeModel = GetEmployeeModel(employeeRawData);
+                employeeData.Add(employeeModel);
             } 
 
             return employeeData;
@@ -60,11 +63,11 @@ namespace EmployeeTest.Services
 
         private RawEmployeeModel GetRawEmployeeModel(string line)
         {
-            var parts = line.Split(',');
+            var parts = SplitLine(line);
 
             var rawEmployeeModel = new RawEmployeeModel
             {
-                EmployeeId = parts[0],
+                EmployeeId = GetEmployeeId(parts),
                 FirstName = parts[1],
                 LastName = parts[2],
                 PayType = parts[3],
@@ -77,15 +80,48 @@ namespace EmployeeTest.Services
             return rawEmployeeModel;
         }
 
+        private string GetEmployeeId(string[] parts)
+        {
+            var employeeId = parts[0];
+            return employeeId;
+        }
+
+        private string[] SplitLine(string line)
+        {
+            var parts = line.Split(',');
+            return parts;
+        }
+
+        private string GetEmployeeId(string line)
+        {
+            var parts = SplitLine(line);
+            var employeeId = GetEmployeeId(parts);
+            return employeeId;
+        }
+
         public List<TopEarnerModel> GetTopEarners()
         {
             var topEarners = new List<TopEarnerModel>();
             return topEarners;
         }
 
-        public EmployeeModel GetEmployeeByEmployeeId()
+        public EmployeeModel GetEmployeeByEmployeeId(string employeeId)
         {
-            throw new NotImplementedException();
+            var employee = new EmployeeModel();
+
+            string[] lines = DocumentService.GetDocumentLinesWithId(employeeId);
+
+            foreach (string line in lines)
+            {
+                if (employeeId == GetEmployeeId(lines))
+                {
+                    var employeeRawData = GetRawEmployeeModel(line);
+                    employee = GetEmployeeModel(employeeRawData);
+                    break;
+                }
+            }
+
+            return employee;
         }
     }
 }
