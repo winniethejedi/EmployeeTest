@@ -1,7 +1,6 @@
 ﻿using EmployeeTest.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace EmployeeTest.Services
@@ -34,6 +33,48 @@ namespace EmployeeTest.Services
             return paychecks;
         }
 
+        public List<TopEarnerModel> GetTopEarners()
+        {
+            var paychecks = GetPaychecks();
+            var topEarnersPaychecks = GetTopEarnersPaychecks(paychecks);
+            var topEarners = new List<TopEarnerModel>();
+
+            foreach (var paycheck in topEarnersPaychecks)
+            {
+                TopEarnerModel topEarner = GetTopEarner(paycheck);
+                topEarners.Add(topEarner);
+            }
+
+            DocumentService.CreateTopEarnersDocument(topEarners);
+            return topEarners;
+        }
+
+        private TopEarnerModel GetTopEarner(PaycheckModel paycheck)
+        {
+            var topEarner = new TopEarnerModel
+            {
+                FirstName = paycheck.FirstName,
+                GrossPay = paycheck.GrossPay,
+                LastName = paycheck.LastName,
+                YearsWorked = GetYearsWorked(paycheck.StartDate)
+            };
+
+            return topEarner;
+        }
+
+        private int GetYearsWorked(DateTime startDate)
+        {
+            int yearsWorked = DateTime.Now.Year - startDate.Year;
+            return yearsWorked;
+        }
+
+        private List<PaycheckModel> GetTopEarnersPaychecks(List<PaycheckModel> paychecks)
+        {
+            int take = (int)Math.Ceiling(paychecks.Count * 0.15);
+            var topEarnersPaychecks = paychecks.Take(take).ToList();
+            return topEarnersPaychecks;
+        }
+
         private PaycheckModel GetPaycheckModel(EmployeeModel employeeData)
         {
             var paycheckModel = new PaycheckModel
@@ -43,7 +84,8 @@ namespace EmployeeTest.Services
                 LastName = employeeData.LastName,
                 GrossPay = GetGrossPay(employeeData),
                 FederalTax = TaxData.FederalTax,
-                StateTax = GetStateTax(employeeData.HomeState)
+                StateTax = GetStateTax(employeeData.HomeState),
+                StartDate = employeeData.StartDate
             };
 
             paycheckModel.NetPay = GetNetPay(paycheckModel);

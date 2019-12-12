@@ -112,7 +112,7 @@ namespace EmployeeTest.Services
             return topEarners;
         }
 
-        public List<EmployeeModel> GetTenRandomEmployeesByEmployeeId()
+        public List<EmployeeModel> GetTenRandomEmployeesByEmployeeId(bool logElapsedTime = false)
         {
             var employeeData = GetAllEmployeeData();
             var randomEmployeeIds = GetRandomEmployeeIds(employeeData);
@@ -122,7 +122,7 @@ namespace EmployeeTest.Services
 
             foreach (string employeeId in randomEmployeeIds)
             {
-                var duplicateEmployee = GetEmployeeByEmployeeId(employeeId, out long elapsedMilliseconds);
+                var duplicateEmployee = GetEmployeeByEmployeeId(employeeId, out long elapsedMilliseconds, logElapsedTime);
                 returnedEmployeeData.Add(duplicateEmployee);
                 elapsedTimeData.Add(employeeId, elapsedMilliseconds);
             }
@@ -145,7 +145,7 @@ namespace EmployeeTest.Services
             return employeesIdsToGet;
         }
 
-        public EmployeeModel GetEmployeeByEmployeeId(string employeeId, out long elapsedMilliseconds)
+        public EmployeeModel GetEmployeeByEmployeeId(string employeeId, out long elapsedMilliseconds, bool logElapsedTime = false)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -172,6 +172,12 @@ namespace EmployeeTest.Services
 
             stopwatch.Stop();
             elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+
+            if (logElapsedTime)
+            {
+                Console.WriteLine(elapsedMilliseconds);
+            }
+
             return employee;
         }
     }

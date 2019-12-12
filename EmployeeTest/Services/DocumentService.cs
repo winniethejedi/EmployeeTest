@@ -58,7 +58,23 @@ namespace EmployeeTest.Services
                 lines.Add(elapsedTime.ToString());
             }
 
-            string fileName = "elapsed_time" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+            string fileName = "elapsed_time_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+            string fileLocation = FileDirectory + fileName;
+            File.WriteAllLines(fileLocation, lines);
+        }
+
+        internal void CreateTopEarnersDocument(List<TopEarnerModel> topEarners)
+        {
+            List<string> lines = new List<string>();
+            topEarners = topEarners.OrderByDescending(x => x.YearsWorked).ThenBy(x => x.LastName).ThenBy(x => x.FirstName).ToList();
+
+            foreach (var earner in topEarners)
+            {
+                lines.Add(earner.ToString());
+            }
+
+            //TODO: Make this a method for the three methods.
+            string fileName = "top_earners" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
             string fileLocation = FileDirectory + fileName;
             File.WriteAllLines(fileLocation, lines);
         }

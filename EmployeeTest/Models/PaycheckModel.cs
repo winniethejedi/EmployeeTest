@@ -1,4 +1,6 @@
-﻿namespace EmployeeTest.Models
+﻿using System;
+
+namespace EmployeeTest.Models
 {
     public class PaycheckModel
     {
@@ -9,6 +11,7 @@
         public decimal FederalTax { get; set; }
         public decimal StateTax { get; set; }
         public decimal NetPay { get; set; }
+        public DateTime StartDate { get; set; }
 
         public override string ToString()
         {

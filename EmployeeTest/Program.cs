@@ -19,12 +19,14 @@ namespace EmployeeTest
                 var paycheckService = new PaycheckService(employeeService, documentService);
                 var paycheckData = paycheckService.GetPaychecks();
 
-                //2.
+                //TODO: Create overrides since we've already gotten the data?
+                //2. Gets top earners
+                var topEarners = paycheckService.GetTopEarners();
 
                 //3.
 
                 //4. Gets ten random employees by EmployeeId and creates a text file with the time to get each of them.
-                var tenRandomEmployees = employeeService.GetTenRandomEmployeesByEmployeeId();
+                var tenRandomEmployees = employeeService.GetTenRandomEmployeesByEmployeeId(logElapsedTime: true);
 
                 Console.WriteLine("All done! Good-bye world!");
             }
