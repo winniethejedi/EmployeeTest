@@ -15,11 +15,16 @@ namespace EmployeeTest
                 var documentService = new DocumentService();
                 var employeeService = new EmployeeService(parseService, documentService);
 
-                var employeeData = employeeService.GetAllEmployeeData();
-
+                //1. Creates a document with all paycheck data
                 var paycheckService = new PaycheckService(employeeService, documentService);
-
                 var paycheckData = paycheckService.GetPaychecks();
+
+                //2.
+
+                //3.
+
+                //4. Gets ten random employees by EmployeeId and creates a text file with the time to get each of them.
+                var tenRandomEmployees = employeeService.GetTenRandomEmployeesByEmployeeId();
 
                 Console.WriteLine("All done! Good-bye world!");
             }

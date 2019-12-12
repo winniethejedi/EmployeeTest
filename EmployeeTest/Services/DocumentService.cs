@@ -27,7 +27,7 @@ namespace EmployeeTest.Services
         {
             string[] lines = GetDocumentLines();
 
-            //TODO: Add explanatory comment.
+            //This should help further narrow the results.
             string employeeIdPlusComma = employeeId + ",";
 
             string[] idLines = lines.Where(x => x.Contains(employeeIdPlusComma)).ToArray();
@@ -44,6 +44,21 @@ namespace EmployeeTest.Services
             }
 
             string fileName = "paychecks_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+            string fileLocation = FileDirectory + fileName;
+            File.WriteAllLines(fileLocation, lines);
+        }
+
+        internal void CreateElapsedTimeDocument(Dictionary<string, long> elapsedTimeData)
+        {
+            List<string> lines = new List<string>();
+            elapsedTimeData = elapsedTimeData.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+
+            foreach (var elapsedTime in elapsedTimeData)
+            {
+                lines.Add(elapsedTime.ToString());
+            }
+
+            string fileName = "elapsed_time" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
             string fileLocation = FileDirectory + fileName;
             File.WriteAllLines(fileLocation, lines);
         }

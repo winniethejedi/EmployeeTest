@@ -1,6 +1,7 @@
 ﻿using EmployeeTest.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace EmployeeTest.Services
@@ -24,12 +25,18 @@ namespace EmployeeTest.Services
 
             foreach(string line in lines)
             {
-                var employeeRawData = GetRawEmployeeModel(line);
-                var employeeModel = GetEmployeeModel(employeeRawData);
+                var employeeModel = GetEmployeeModel(line);
                 employeeData.Add(employeeModel);
             } 
 
             return employeeData;
+        }
+
+        private EmployeeModel GetEmployeeModel(string line)
+        {
+            var employeeRawData = GetRawEmployeeModel(line);
+            var employeeModel = GetEmployeeModel(employeeRawData);
+            return employeeModel;
         }
 
         private EmployeeModel GetEmployeeModel(RawEmployeeModel employeeRawData)
@@ -105,22 +112,66 @@ namespace EmployeeTest.Services
             return topEarners;
         }
 
-        public EmployeeModel GetEmployeeByEmployeeId(string employeeId)
+        public List<EmployeeModel> GetTenRandomEmployeesByEmployeeId()
         {
+            var employeeData = GetAllEmployeeData();
+            var randomEmployeeIds = GetRandomEmployeeIds(employeeData);
+
+            var returnedEmployeeData = new List<EmployeeModel>();
+            Dictionary<string, long> elapsedTimeData = new Dictionary<string, long>();
+
+            foreach (string employeeId in randomEmployeeIds)
+            {
+                var duplicateEmployee = GetEmployeeByEmployeeId(employeeId, out long elapsedMilliseconds);
+                returnedEmployeeData.Add(duplicateEmployee);
+                elapsedTimeData.Add(employeeId, elapsedMilliseconds);
+            }
+
+            DocumentService.CreateElapsedTimeDocument(elapsedTimeData);
+            return returnedEmployeeData;
+        }
+
+        private List<string> GetRandomEmployeeIds(List<EmployeeModel> employeeData)
+        {
+            var employeesIdsToGet = new List<string>();
+            var random = new Random();
+
+            for (int i = 0; i < 10; i++)
+            {
+                var randomEmployeeIndex = random.Next(employeeData.Count);
+                employeesIdsToGet.Add(employeeData[randomEmployeeIndex].EmployeeId);
+            }
+
+            return employeesIdsToGet;
+        }
+
+        public EmployeeModel GetEmployeeByEmployeeId(string employeeId, out long elapsedMilliseconds)
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var employee = new EmployeeModel();
 
             string[] lines = DocumentService.GetDocumentLinesWithId(employeeId);
 
-            foreach (string line in lines)
+            if (lines.Length == 1)
             {
-                if (employeeId == GetEmployeeId(lines))
+                employee = GetEmployeeModel(lines[0]);
+            }
+            else
+            {
+                foreach (string line in lines)
                 {
-                    var employeeRawData = GetRawEmployeeModel(line);
-                    employee = GetEmployeeModel(employeeRawData);
-                    break;
+                    if (employeeId == GetEmployeeId(line))
+                    {
+                        employee = GetEmployeeModel(line);
+                        break;
+                    }
                 }
             }
 
+            stopwatch.Stop();
+            elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
             return employee;
         }
     }
