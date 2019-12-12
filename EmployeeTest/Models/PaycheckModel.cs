@@ -9,5 +9,11 @@
         public decimal FederalTax { get; set; }
         public decimal StateTax { get; set; }
         public decimal NetPay { get; set; }
+
+        public override string ToString()
+        {
+            string payCheckModelString = $"{EmployeeId},{FirstName},{LastName},{GrossPay},{FederalTax},{StateTax},{NetPay}";
+            return payCheckModelString;
+        }
     }
 }

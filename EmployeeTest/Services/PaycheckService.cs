@@ -9,10 +9,12 @@ namespace EmployeeTest.Services
     public class PaycheckService
     {
         private EmployeeService EmployeeService { get; set; }
+        private DocumentService DocumentService { get; set; }
 
-        public PaycheckService(EmployeeService EmployeeService)
+        public PaycheckService(EmployeeService EmployeeService, DocumentService DocumentService)
         {
             this.EmployeeService = EmployeeService;
+            this.DocumentService = DocumentService;
         }
 
         public List<PaycheckModel> GetPaychecks()
@@ -27,6 +29,8 @@ namespace EmployeeTest.Services
             }
 
             paychecks = paychecks.OrderByDescending(x => x.GrossPay).ToList();
+            DocumentService.CreatePaychecksDocument(paychecks);
+
             return paychecks;
         }
 

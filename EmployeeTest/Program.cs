@@ -17,7 +17,7 @@ namespace EmployeeTest
 
                 var employeeData = employeeService.GetAllEmployeeData();
 
-                var paycheckService = new PaycheckService(employeeService);
+                var paycheckService = new PaycheckService(employeeService, documentService);
 
                 var paycheckData = paycheckService.GetPaychecks();
 
@@ -28,6 +28,8 @@ namespace EmployeeTest
                 string json = JsonConvert.SerializeObject(ex);
                 Console.WriteLine(json);
             }
+
+            Console.Read();
         }
     }
 }
