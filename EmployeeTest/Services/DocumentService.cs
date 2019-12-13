@@ -8,6 +8,7 @@ namespace EmployeeTest.Services
 {
     public class DocumentService
     {
+        //This should be changed to whichever folder on your computer you want to save the documents
         public const string FileDirectory = @"C:\Users\Owner\source\repos\EmployeeTest\Documents\";
         public const string FileLocation = FileDirectory + @"Employees.txt";
 
@@ -36,45 +37,37 @@ namespace EmployeeTest.Services
 
         internal void CreatePaychecksDocument(List<PaycheckModel> paychecks)
         {
-            List<string> lines = new List<string>();
-
-            foreach (var paycheck in paychecks)
-            {
-                lines.Add(paycheck.ToString());
-            }
-
-            string fileName = "paychecks_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
-            string fileLocation = FileDirectory + fileName;
-            File.WriteAllLines(fileLocation, lines);
+            var lines = paychecks.Select(x => x.ToString()).ToArray();
+            CreateFile(lines, "paychecks_");
         }
 
         internal void CreateElapsedTimeDocument(Dictionary<string, long> elapsedTimeData)
         {
-            List<string> lines = new List<string>();
-            elapsedTimeData = elapsedTimeData.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            var lines = elapsedTimeData.Select(x => x.ToString()).ToArray();
+            CreateFile(lines, "elapsed_time_");
+        }
 
-            foreach (var elapsedTime in elapsedTimeData)
-            {
-                lines.Add(elapsedTime.ToString());
-            }
-
-            string fileName = "elapsed_time_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
-            string fileLocation = FileDirectory + fileName;
-            File.WriteAllLines(fileLocation, lines);
+        internal void CreateStateDocument(List<StateModel> statesData)
+        {
+            var lines = statesData.Select(x => x.ToString()).ToArray();
+            CreateFile(lines, "states_");
         }
 
         internal void CreateTopEarnersDocument(List<TopEarnerModel> topEarners)
         {
-            List<string> lines = new List<string>();
-            topEarners = topEarners.OrderByDescending(x => x.YearsWorked).ThenBy(x => x.LastName).ThenBy(x => x.FirstName).ToList();
+            var lines = topEarners.Select(x => x.ToString()).ToArray();
+            CreateFile(lines, "top_earners_");
+        }
 
-            foreach (var earner in topEarners)
-            {
-                lines.Add(earner.ToString());
-            }
+        private string CreateFileName(string prefix)
+        {
+            string fileName = prefix + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+            return fileName;
+        }
 
-            //TODO: Make this a method for the three methods.
-            string fileName = "top_earners" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+        private void CreateFile(string[] lines, string prefix)
+        {
+            string fileName = CreateFileName(prefix);
             string fileLocation = FileDirectory + fileName;
             File.WriteAllLines(fileLocation, lines);
         }

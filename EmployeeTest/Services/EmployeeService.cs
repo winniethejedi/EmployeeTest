@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
+using System.Linq;
 
 namespace EmployeeTest.Services
 {
@@ -20,14 +20,13 @@ namespace EmployeeTest.Services
         public List<EmployeeModel> GetAllEmployeeData()
         {
             var employeeData = new List<EmployeeModel>();
-
             string[] lines = DocumentService.GetDocumentLines();
 
-            foreach(string line in lines)
+            foreach (string line in lines)
             {
                 var employeeModel = GetEmployeeModel(line);
                 employeeData.Add(employeeModel);
-            } 
+            }
 
             return employeeData;
         }
@@ -106,17 +105,10 @@ namespace EmployeeTest.Services
             return employeeId;
         }
 
-        public List<TopEarnerModel> GetTopEarners()
-        {
-            var topEarners = new List<TopEarnerModel>();
-            return topEarners;
-        }
-
         public List<EmployeeModel> GetTenRandomEmployeesByEmployeeId(bool logElapsedTime = false)
         {
             var employeeData = GetAllEmployeeData();
             var randomEmployeeIds = GetRandomEmployeeIds(employeeData);
-
             var returnedEmployeeData = new List<EmployeeModel>();
             Dictionary<string, long> elapsedTimeData = new Dictionary<string, long>();
 
@@ -127,6 +119,7 @@ namespace EmployeeTest.Services
                 elapsedTimeData.Add(employeeId, elapsedMilliseconds);
             }
 
+            elapsedTimeData = elapsedTimeData.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
             DocumentService.CreateElapsedTimeDocument(elapsedTimeData);
             return returnedEmployeeData;
         }
@@ -149,9 +142,7 @@ namespace EmployeeTest.Services
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-
             var employee = new EmployeeModel();
-
             string[] lines = DocumentService.GetDocumentLinesWithId(employeeId);
 
             if (lines.Length == 1)

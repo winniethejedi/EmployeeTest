@@ -18,8 +18,13 @@ namespace EmployeeTest.Services
 
         public List<PaycheckModel> GetPaychecks()
         {
-            var paychecks = new List<PaycheckModel>();
             var employeeDatas = EmployeeService.GetAllEmployeeData();
+            return GetPaychecks(employeeDatas);
+        }
+
+        public List<PaycheckModel> GetPaychecks(List<EmployeeModel> employeeDatas)
+        {
+            var paychecks = new List<PaycheckModel>();
 
             foreach (var employeeData in employeeDatas)
             {
@@ -29,13 +34,17 @@ namespace EmployeeTest.Services
 
             paychecks = paychecks.OrderByDescending(x => x.GrossPay).ToList();
             DocumentService.CreatePaychecksDocument(paychecks);
-
             return paychecks;
         }
 
         public List<TopEarnerModel> GetTopEarners()
         {
             var paychecks = GetPaychecks();
+            return GetTopEarners(paychecks);
+        }
+
+        public List<TopEarnerModel> GetTopEarners(List<PaycheckModel> paychecks)
+        {
             var topEarnersPaychecks = GetTopEarnersPaychecks(paychecks);
             var topEarners = new List<TopEarnerModel>();
 
@@ -45,6 +54,7 @@ namespace EmployeeTest.Services
                 topEarners.Add(topEarner);
             }
 
+            topEarners = topEarners.OrderByDescending(x => x.YearsWorked).ThenBy(x => x.LastName).ThenBy(x => x.FirstName).ToList();
             DocumentService.CreateTopEarnersDocument(topEarners);
             return topEarners;
         }
@@ -85,7 +95,9 @@ namespace EmployeeTest.Services
                 GrossPay = GetGrossPay(employeeData),
                 FederalTax = TaxData.FederalTax,
                 StateTax = GetStateTax(employeeData.HomeState),
-                StartDate = employeeData.StartDate
+                StartDate = employeeData.StartDate,
+                HomeState = employeeData.HomeState,
+                HoursWorked = employeeData.HoursWorked
             };
 
             paycheckModel.NetPay = GetNetPay(paycheckModel);
@@ -109,7 +121,7 @@ namespace EmployeeTest.Services
         private decimal GetStateTax(string homeState)
         {
             bool hasState = TaxData.StateTaxes.TryGetValue(homeState, out decimal stateTax);
-            
+
             if (!hasState)
             {
                 stateTax = 0;

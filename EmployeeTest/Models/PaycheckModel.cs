@@ -12,6 +12,8 @@ namespace EmployeeTest.Models
         public decimal StateTax { get; set; }
         public decimal NetPay { get; set; }
         public DateTime StartDate { get; set; }
+        public string HomeState { get; set; }
+        public int HoursWorked { get; set; }
 
         public override string ToString()
         {
